@@ -22,7 +22,8 @@ class TimestampedBufferedFileLogger < ActiveSupport::BufferedLogger
 
   def add(severity, message = nil, progname = nil, &block)
     message = message.to_s
-    buffer << "%s - #{message}\n" % [Time.now.to_f.to_s]
+    # time after comment at end of line (for cut & pasting from logs)
+    buffer << "#{message} # %s;\n" % [Time.now.to_f.to_s]
     auto_flush
     message
   end

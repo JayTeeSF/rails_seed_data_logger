@@ -9,7 +9,7 @@ module EventLogger
     super
 
     base.class_eval do
-      after_save :trace_create
+      after_create :trace_create
       after_update :trace_update
       extend ClassMethods
     end
@@ -23,17 +23,19 @@ module EventLogger
     end
   end
 
-  def trace_create(record)
+  def trace_create
     if log?
-      attrs = record.attributes.dup
-      trim_keys(attrs,"created_at","updated_at")
-      log "#{self.class.to_s}.create(#{attrs.inspect})"
+      attrs = self.attributes.dup
+      obj_id = attrs["id"]
+      trim_keys(attrs,"created_at","updated_at","id")
+      log "obj = #{self.class.to_s}.create(#{attrs.inspect})"
+      log "obj.id # => #{obj_id}" if obj_id
     end
   end
 
-  def trace_update(record)
+  def trace_update
     if log?
-      attrs = record.attributes.dup
+      attrs = self.attributes.dup
       obj_id = attrs["id"]
       trim_keys(attrs,"created_at","updated_at","id")
       log "#{self.class.to_s}.find_by_id(#{obj_id}).update_attributes(#{attrs.inspect})"
